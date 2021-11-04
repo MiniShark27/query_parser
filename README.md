@@ -9,6 +9,9 @@ git clone https://github.com/MiniShark27/query_parser.git
 cd .\query_parser\
 ./mvnw clean compile assembly:single
 ```
+Note, if you get an error saying `JAVA_HOME` is not set, either java is not installed or the `JAVA_HOME` enviroment variable is not set. For convenience, [here](https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.1+12/OpenJDK17U-jdk_x64_windows_hotspot_17.0.1_12.msi) is a link to download Java, click the option to set `JAVA_HOME` if prompted.
+
+Backup link: https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.1+12/OpenJDK17U-jdk_x64_windows_hotspot_17.0.1_12.msi
 
 ## Running
 Run the following
