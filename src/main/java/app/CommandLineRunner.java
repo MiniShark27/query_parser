@@ -75,4 +75,8 @@ public class CommandLineRunner {
     }
     return input.split(";");
   }
+
+  public static String test(String a, String b){
+    return a+"HI"+b;
+  }
 }
