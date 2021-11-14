@@ -8,12 +8,9 @@ import java.util.Properties;
 import java.util.Scanner;
 
 import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.sql.parser.SqlParseException;
-import org.apache.calcite.tools.RelConversionException;
-import org.apache.calcite.tools.ValidationException;
 
 public class CommandLineRunner {
-  public static void main(String... args) throws SQLException, SqlParseException, ValidationException, RelConversionException, IOException{
+  public static void main(String... args) throws SQLException, IOException{
     Scanner scanner = new Scanner(System.in);
     Properties connectionProperties;
     try {
