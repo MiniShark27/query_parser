@@ -7,33 +7,60 @@ import java.sql.SQLException;
 import java.util.Properties;
 import java.util.Scanner;
 
-import org.apache.calcite.rel.RelNode;
-
+/**
+ * Used for running the {@link QueryParser} from the command line on
+ * {@code .sql} files
+ */
 public class CommandLineRunner {
-  public static void main(String... args) throws SQLException, IOException{
+
+  /**
+   * Runs the parser via the command line. Can create the
+   * {@code config.properties} file via prompts.
+   * 
+   * @param args Not used
+   * @throws IOException  If the {@code config.properties} file didn't exist, and
+   *                      was unable to be created
+   * @throws SQLException If a database access error occurs
+   */
+  public static void main(String... args) throws IOException, SQLException {
     Scanner scanner = new Scanner(System.in);
+
     Properties connectionProperties;
     try {
+      // If config.properties exists
       connectionProperties = GetConnection.readPropertiesFile();
     } catch (Exception e) {
-      connectionProperties = GetConnection.makePostgresSchemaProperties(scanner);
+      // If config.properties does not exist (or has an error)
+      connectionProperties = GetConnection.createPropertiesFile(scanner);
     }
-    QueryParser qp = new QueryParser(GetConnection.getSchemaFromProperties(connectionProperties));
+    QueryParser queryParser = new QueryParser(GetConnection.getSchemaFromProperties(connectionProperties));
+
     while (true) {
       System.out.println("Enter File with query(s) to execute (type quit to quit):");
       String file = scanner.nextLine();
       if ("quit".equals(file))
         break;
-      for (String query : getQueriesFromFile(file)){
+      for (String query : getQueriesFromFile(file)) {
         System.out.println("Query: " + query + "\n");
-        RelNode relNode = qp.getRelNode(query);
-        relNode.explain(QueryParser.relWriter);
+        try {
+          queryParser.getRelNode(query).explain(QueryParser.relWriter);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
         System.out.println("");
       }
     }
     scanner.close();
   }
 
+  /**
+   * Retreives Sql queries from a given file. Note: will split on {@code ;} so
+   * semicolons are required to mark the end of each query in the file
+   * 
+   * @param fileName The file containing the sql queries. Should be in the same
+   *                 directory as where the program was called
+   * @return An array of sql queries from the the given file.
+   */
   public static String[] getQueriesFromFile(String fileName) {
     String input = "";
     try {
