@@ -91,7 +91,7 @@
             </descriptorRefs>
             <archive>
               <manifest>
-                <mainClass>app.QueryParser</mainClass>
+                <mainClass>app.CommandLineRunner</mainClass>
               </manifest>
             </archive>
           </configuration>

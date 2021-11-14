@@ -19,18 +19,7 @@ import org.apache.calcite.schema.SchemaPlus;
 
 public class GetConnection {
 
-  public static SchemaPlus getSchemaFromProperties() throws SQLException {
-    Properties prop = new Properties();
-    try (InputStream input = new FileInputStream("config.properties")) {
-      prop.load(input);
-    } catch (IOException ex) {
-      System.out.println("Properties File Not Found, Making One");
-      try {
-        prop = getPostgresScemaProperties();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
+  public static SchemaPlus getSchemaFromProperties(Properties prop) throws SQLException {
     return getSchema(prop.getProperty("db.url"), prop.getProperty("db.user"), prop.getProperty("db.password"),
           prop.getProperty("db.calciteDb"));
   }
@@ -52,10 +41,19 @@ public class GetConnection {
     return rootSchema;
   }
 
-  private static Properties getPostgresScemaProperties() throws IOException {
+  public static Properties readPropertiesFile() throws IOException{
+    Properties prop = new Properties();
+    try (InputStream input = new FileInputStream("config.properties")) {
+      prop.load(input);
+    } catch (IOException ex) {
+      System.out.println("Properties File Not Found");
+      throw ex;
+    }
+    return prop;
+  }
 
-    Scanner scanner = new Scanner(System.in);
-
+  public static Properties makePostgresSchemaProperties(Scanner scanner) throws IOException {
+    System.out.println("Making Properties File");
     System.out.println("Pulling from local postgres database (hosted at 127.0.0.1 i.e. localhost)");
 
     System.out.println("Please input the name of the maintenence database:");
@@ -84,7 +82,6 @@ public class GetConnection {
 
     prop.store(output, null);
     System.out.println(prop);
-    scanner.close();
     return prop;
   }
 }
