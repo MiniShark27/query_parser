@@ -32,13 +32,13 @@ public class GetConnection {
    *              {@code db.url} for the url to connect to the database,
    *              {@code db.user} for the user to connect to the database as,
    *              {@code db.password} the password for the user connecting,
-   *              {@code db.newName} the name of the schema in the calcite db
+   *              {@code db.name} the name of the schema in the calcite db
    * @return Schema object (to be used in {@link QueryParser} likely)
    * @throws SQLException if a database access error occurs
    */
   public static SchemaPlus getSchemaFromProperties(Properties props) throws SQLException {
     return getSchema(props.getProperty("db.url"), props.getProperty("db.user"), props.getProperty("db.password"),
-        props.getProperty("db.newName"));
+        props.getProperty("db.name"));
   }
 
   /**
@@ -47,17 +47,17 @@ public class GetConnection {
    * @param dbUrl    The url to where the database is hosted
    * @param user     The user connecting to the database
    * @param password The password for the user connecting to the database
-   * @param newName  The name of the schema in the calcite database that
+   * @param name     The name of the schema in the calcite database that
    *                 references the newly connected schema
    * @return A {@link SchemaPlus} object referenceing the calcite database with
    *         the foreign database's schema added
    * @throws SQLException if a database access error occurs
    */
-  private static SchemaPlus getSchema(String dbUrl, String user, String password, String newName) throws SQLException {
+  public static SchemaPlus getSchema(String dbUrl, String user, String password, String name) throws SQLException {
     System.out.println("Connecting to database at: " + dbUrl);
     System.out.println("Username: " + user);
     System.out.println("Password: " + password);
-    System.out.println("Will be stored in database: " + newName);
+    System.out.println("Will be stored in database: " + name);
 
     DriverManager.registerDriver(new org.apache.calcite.jdbc.Driver());
     Connection connection = DriverManager.getConnection("jdbc:calcite:");
@@ -65,7 +65,7 @@ public class GetConnection {
     SchemaPlus rootSchema = calciteConnection.getRootSchema();
 
     final DataSource ds = JdbcSchema.dataSource(dbUrl, "org.postgresql.Driver", user, password);
-    rootSchema.add(newName, JdbcSchema.create(rootSchema, newName, ds, null, null));
+    rootSchema.add(name, JdbcSchema.create(rootSchema, name, ds, null, null));
 
     return rootSchema;
   }
@@ -102,7 +102,7 @@ public class GetConnection {
 
     System.out.println("Please input the name of the maintenence database:");
     String maintenenceDb = scanner.nextLine();
-    String newName = maintenenceDb;
+    String name = maintenenceDb;
 
     System.out.println("Please input the port where the database is:");
     int port = scanner.nextInt();
@@ -122,7 +122,7 @@ public class GetConnection {
     prop.setProperty("db.url", dbUrl);
     prop.setProperty("db.user", username);
     prop.setProperty("db.password", password);
-    prop.setProperty("db.newName", newName);
+    prop.setProperty("db.name", name);
 
     prop.store(output, null);
     System.out.println(prop);

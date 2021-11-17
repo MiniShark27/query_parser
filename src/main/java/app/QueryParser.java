@@ -1,10 +1,11 @@
 package app;
 
 import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.SQLException;
 
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelRoot;
-import org.apache.calcite.rel.RelWriter;
 import org.apache.calcite.rel.externalize.RelWriterImpl;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.sql.SqlExplainLevel;
@@ -22,18 +23,29 @@ import org.apache.calcite.tools.ValidationException;
  */
 public class QueryParser {
 
-  SchemaPlus schema;
-  FrameworkConfig config;
-  static RelWriter relWriter = new RelWriterImpl(new PrintWriter(System.out), SqlExplainLevel.EXPPLAN_ATTRIBUTES,
-      false);
+  private SchemaPlus schema;
+  private FrameworkConfig config;
+
+  static String relNodeToString(RelNode node) {
+    StringWriter sw = new StringWriter();
+    node.explain(new RelWriterImpl(new PrintWriter(sw), SqlExplainLevel.EXPPLAN_ATTRIBUTES, false));
+    return sw.toString();
+  }
 
   /**
-   * Constructs the {@link QueryParser} object referencing the given schema
+   * Constructs the {@link QueryParser} object referencing the given schema and
+   * initializes it
    * 
    * @param schema The Schema this {@link QueryParser} will reference
    */
   public QueryParser(SchemaPlus schema) {
     this.schema = schema;
+    SqlParser.Config insensitiveParser = SqlParser.config().withCaseSensitive(false);
+    this.config = Frameworks.newConfigBuilder().parserConfig(insensitiveParser).defaultSchema(this.schema).build();
+  }
+
+  public QueryParser(String dbUrl, String user, String password, String name) throws SQLException {
+    this.schema = GetConnection.getSchema(dbUrl, user, password, name);
     SqlParser.Config insensitiveParser = SqlParser.config().withCaseSensitive(false);
     this.config = Frameworks.newConfigBuilder().parserConfig(insensitiveParser).defaultSchema(this.schema).build();
   }

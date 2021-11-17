@@ -43,7 +43,7 @@ public class CommandLineRunner {
       for (String query : getQueriesFromFile(file)) {
         System.out.println("Query: " + query + "\n");
         try {
-          queryParser.getRelNode(query).explain(QueryParser.relWriter);
+          System.out.println(QueryParser.relNodeToString(queryParser.getRelNode(query)));
         } catch (Exception e) {
           e.printStackTrace();
         }
@@ -76,7 +76,7 @@ public class CommandLineRunner {
     return input.split(";");
   }
 
-  public static String test(String a, String b){
-    return a+"HI"+b;
+  public static String test(String a, String b) {
+    return a + "HI" + b;
   }
 }
