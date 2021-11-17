@@ -26,6 +26,12 @@ public class QueryParser {
   private SchemaPlus schema;
   private FrameworkConfig config;
 
+  /**
+   * Converts a {@link RelNode}'s execution plan to a string
+   * 
+   * @param node The node whoese execution plan will be converted to a string
+   * @return A string representing the {@code node}'s execution plan
+   */
   static String relNodeToString(RelNode node) {
     StringWriter sw = new StringWriter();
     node.explain(new RelWriterImpl(new PrintWriter(sw), SqlExplainLevel.EXPPLAN_ATTRIBUTES, false));
